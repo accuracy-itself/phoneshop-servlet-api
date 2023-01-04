@@ -2,9 +2,11 @@ package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
+import java.util.Comparator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -39,13 +41,38 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> findProducts() {
+    public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         readLock.lock();
         try {
-            return products.stream()
-                    .filter(product -> product.getStock() > 0)
-                    .filter(product -> product.getPrice() != null)
-                    .collect(Collectors.toList());
+            Comparator<Product> comparator = Comparator.comparing(product -> {
+                    if(SortField.description == sortField)
+                        return (Comparable) product.getDescription();
+
+                    if(SortField.price == sortField)
+                        return (Comparable) product.getPrice();
+
+                    else if(query != null && !query.equals(""))
+                        return (Comparable)Arrays.stream(query.split(" "))
+                                .filter(word -> product.getDescription().contains(word)).count();
+
+                    else
+                        return(Comparable) product.getId();
+            });
+
+            if(query == null || query.equals(""))
+                return products.stream()
+                        .filter(product -> product.getStock() > 0)
+                        .filter(product -> product.getPrice() != null)
+                        .sorted((sortOrder == SortOrder.desc) ? comparator.reversed() : comparator)
+                        .collect(Collectors.toList());
+            else
+                return products.stream()
+                        .filter(product -> product.getStock() > 0)
+                        .filter(product -> product.getPrice() != null)
+                        .filter(product -> Arrays.stream(query.split(" "))
+                                .anyMatch(word -> product.getDescription().contains(word)))
+                        .sorted((sortOrder == SortOrder.desc) ? comparator.reversed() : comparator)
+                        .collect(Collectors.toList());
         }
         finally{
             readLock.unlock();

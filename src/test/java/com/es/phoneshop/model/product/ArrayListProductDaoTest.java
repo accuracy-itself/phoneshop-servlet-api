@@ -24,7 +24,7 @@ public class ArrayListProductDaoTest
 
     @Test
     public void testFindCorrectProducts() {
-        List<Product> products = productDao.findProducts();
+        List<Product> products = productDao.findProducts(null, null, null);
         assertFalse(products.isEmpty());
 
         Optional<Product> productFoundOpt = products.stream()
