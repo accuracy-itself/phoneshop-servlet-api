@@ -39,41 +39,47 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized List<Product> findProducts() {
-        return products.stream()
-                .filter(product -> product.getStock() > 0)
-                .filter(product -> product.getPrice() != null)
-                .collect(Collectors.toList());
+    public List<Product> findProducts() {
+        readLock.lock();
+        try {
+            return products.stream()
+                    .filter(product -> product.getStock() > 0)
+                    .filter(product -> product.getPrice() != null)
+                    .collect(Collectors.toList());
+        }
+        finally{
+            readLock.unlock();
+        }
     }
 
     @Override
     public void save(Product product) {
+        Long id = product.getId();
+
         writeLock.lock();
 
-        Long id = product.getId();
         if(id != null) {
-            delete(id);
+            Optional<Product> productFoundOpt = products.stream()
+                    .filter(productFound -> id.equals(productFound.getId()))
+                    .findAny();
+
+            if(productFoundOpt.isPresent())
+                products.set(products.indexOf(productFoundOpt.get()), product);
+            else
+                products.add(product);
         }
         else {
             product.setId(maxId++);
+            products.add(product);
         }
 
         writeLock.unlock();
-
-        products.add(product);
     }
 
     @Override
     public void delete(Long id) {
-        Optional<Product> existingProduct;
-
         writeLock.lock();
-        existingProduct = products.stream()
-                .filter(product -> id.equals(product.getId()))
-                .findAny();
-
-        existingProduct.ifPresent(product -> products.remove(product));
-
+        products.removeIf(product -> id.equals(product.getId()));
         writeLock.unlock();
     }
 
@@ -88,7 +94,7 @@ public class ArrayListProductDao implements ProductDao {
         save(new Product("sec901", "Sony Ericsson C901", new BigDecimal(420), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Sony/Sony%20Ericsson%20C901.jpg"));
         save(new Product("xperiaxz", "Sony Xperia XZ", new BigDecimal(120), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Sony/Sony%20Xperia%20XZ.jpg"));
         save(new Product("nokia3310", "Nokia 3310", new BigDecimal(70), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Nokia/Nokia%203310.jpg"));
-        save(new Product("palmp", "Palm Pixi", new BigDecimal(170), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Palm/Palm%20Pixi.jpg"));
+        save(new Product("palmp", "Palm Pixi", null, usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Palm/Palm%20Pixi.jpg"));
         save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C56.jpg"));
         save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg"));
         save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));

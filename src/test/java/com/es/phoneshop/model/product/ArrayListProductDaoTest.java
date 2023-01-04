@@ -5,8 +5,13 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 public class ArrayListProductDaoTest
 {
@@ -18,8 +23,15 @@ public class ArrayListProductDaoTest
     }
 
     @Test
-    public void testFindProductsNotEmpty() {
-        assertFalse(productDao.findProducts().isEmpty());
+    public void testFindCorrectProducts() {
+        List<Product> products = productDao.findProducts();
+        assertFalse(products.isEmpty());
+
+        Optional<Product> productFoundOpt = products.stream()
+                .filter(product -> product.getPrice() == null || product.getStock() <=0)
+                .findAny();
+
+        assertFalse(productFoundOpt.isPresent());
     }
 
     @Test
@@ -45,16 +57,6 @@ public class ArrayListProductDaoTest
 
         Product productFound = productDao.getProduct(id);
         assertEquals("test-product-with-existing-id", productFound.getCode());
-    }
-
-    @Test(expected = ProductNotFoundException.class)
-    public void testFindProductWithZeroStock() throws ProductNotFoundException {
-        Currency usd = Currency.getInstance("USD");
-        long id = 12L;
-        Product product = new Product(id,"test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        productDao.save(product);
-
-        Product productFound = productDao.getProduct(id);
     }
 
     @Test
@@ -83,5 +85,15 @@ public class ArrayListProductDaoTest
         assertEquals(currency, product.getCurrency());
         assertEquals(stock, product.getStock());
         assertEquals(imageUrl, product.getImageUrl());
+    }
+
+    @Test(expected = ProductNotFoundException.class)
+    public void testDeleteProduct() throws ProductNotFoundException {
+        Currency usd = Currency.getInstance("USD");
+        long id = 0L;
+        Product product = new Product(id,"test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(product);
+        productDao.delete(id);
+        productDao.getProduct(id);
     }
 }
