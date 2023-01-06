@@ -41,7 +41,7 @@ public class ArrayListProductDao implements ProductDao {
                 .filter(product -> product.getStock() > 0)
                 .filter(product -> product.getPrice() != null)
                 .findAny()
-                .orElseThrow(() -> new ProductNotFoundException());
+                .orElseThrow(() -> new ProductNotFoundException(id));
         readLock.unlock();
 
         return productFound;
