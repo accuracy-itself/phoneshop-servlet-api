@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
@@ -96,4 +97,41 @@ public class ArrayListProductDaoTest
         productDao.delete(id);
         productDao.getProduct(id);
     }
+
+    @Test
+    public void testSearchForProducts(){
+        Currency usd = Currency.getInstance("USD");
+        Product product = new Product("test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product2 = new Product("test-product", "HTC Super Mega", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product3 = new Product("test-product", "Iphone", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(product);
+        productDao.save(product2);
+        productDao.save(product3);
+
+        assertEquals(2, productDao.findProducts("S", null, null).size());
+    }
+
+    @Test
+    public void testSortProducts(){
+        Currency usd = Currency.getInstance("USD");
+        Product product1 = new Product("test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product2 = new Product("test-product", "HTC Super Mega", new BigDecimal(500), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product3 = new Product("test-product", "Iphone", new BigDecimal(400), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        productDao.save(product1);
+        productDao.save(product2);
+        productDao.save(product3);
+
+        List<Product> products = productDao.findProducts(null, SortField.price, SortOrder.desc);
+        List<BigDecimal> prices = new ArrayList<>(), pricesFound = new ArrayList<>();
+        prices.add(new BigDecimal(500));
+        prices.add(new BigDecimal(400));
+        prices.add(new BigDecimal(100));
+
+        for (Product product: products) {
+            pricesFound.add(product.getPrice());
+        }
+
+        assertEquals(prices, pricesFound);
+    }
+
 }
