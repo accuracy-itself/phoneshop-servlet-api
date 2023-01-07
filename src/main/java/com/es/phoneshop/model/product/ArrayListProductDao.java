@@ -1,9 +1,7 @@
 package com.es.phoneshop.model.product;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 import java.util.Comparator;
@@ -23,7 +21,6 @@ public class ArrayListProductDao implements ProductDao {
     public static synchronized ProductDao getInstance(){
         if(instance == null)
             instance = new ArrayListProductDao();
-
         return instance;
     }
 
