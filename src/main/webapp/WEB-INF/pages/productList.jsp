@@ -4,26 +4,70 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="products" type="java.util.ArrayList" scope="request"/>
+
 <tags:master pageTitle="Product List">
+  <style>
+    <%@include file="style.css"%>>
+  </style>
   <p>
     Welcome to Expert-Soft training!
   </p>
+  <form>
+    <input name="query" value="${param.query}">
+    <button>Search</button>
+  </form>
   <table>
     <thead>
       <tr>
         <td>Image</td>
-        <td>Description</td>
-        <td class="price">Price</td>
+        <td>
+          Description
+          <tags:sortLink order="asc" sort="description"/>
+          <tags:sortLink order="desc" sort="description"/>
+
+        </td>
+        <td class="price">
+          Price
+          <tags:sortLink order="asc" sort="price"/>
+          <tags:sortLink order="desc" sort="price"/>
       </tr>
     </thead>
     <c:forEach var="product" items="${products}">
       <tr>
         <td>
-          <img class="product-tile" src="${product.imageUrl}">
+          <img class="product-tile" src="${product.imageUrl}" alt="${product.description}">
         </td>
-        <td>${product.description}</td>
-        <td class="price">
-          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+        <td>
+          <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+            ${product.description}
+          </a>
+        </td>
+        <td class="price-popup">
+          <a href="#${product.id}">
+          <fmt:formatNumber value="${product.price}" type="currency"
+                            currencySymbol="${product.currency.symbol}" maxFractionDigits="0"/>
+          </a>
+          <div id="${product.id}" class="overlay">
+            <div class="popup">
+              <h2>Price history:</h2>
+              <h3>${product.description}</h3>
+              <a class="close" href="#">&times;</a>
+              <div>
+                <table class="popup-table">
+                <c:forEach var="history" items="${product.histories}">
+                  <tr>
+                    <td><fmt:parseDate value="${history.date}" pattern="yyyy-MM-dd" var="historyDate" type="date"/>
+                      <fmt:formatDate pattern="dd.MM.yyyy" value="${historyDate}"/></td>
+<%--                    <td><fmt:formatDate value="${history.date}" pattern="yyyy-MM-dd"/></td>--%>
+                    <td><fmt:formatNumber value="${history.price}" type="currency"
+                                          currencySymbol="${product.currency.symbol}" maxFractionDigits="0"/></td>
+                  </tr>
+                </c:forEach>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </td>
       </tr>
     </c:forEach>

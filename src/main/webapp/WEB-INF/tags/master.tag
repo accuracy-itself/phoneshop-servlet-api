@@ -10,12 +10,15 @@
 <body class="product-list">
   <header>
     <a href="${pageContext.servletContext.contextPath}">
-      <img src="${pageContext.servletContext.contextPath}/images/logo.svg"/>
+      <img src="${pageContext.servletContext.contextPath}/images/logo.svg" alt="no image"/>
       PhoneShop
     </a>
   </header>
   <main>
     <jsp:doBody/>
   </main>
+  <p>
+    (c) Expert-Soft
+  </p>
 </body>
 </html>
