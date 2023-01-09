@@ -19,8 +19,9 @@ public class ArrayListProductDao implements ProductDao {
     private static ProductDao instance;
 
     public static synchronized ProductDao getInstance(){
-        if(instance == null)
+        if(instance == null) {
             instance = new ArrayListProductDao();
+        }
         return instance;
     }
 
@@ -33,13 +34,17 @@ public class ArrayListProductDao implements ProductDao {
         Product productFound;
 
         readLock.lock();
-        productFound = products.stream()
-                .filter(product -> id.equals(product.getId()))
-                .filter(product -> product.getStock() > 0)
-                .filter(product -> product.getPrice() != null)
-                .findAny()
-                .orElseThrow(() -> new ProductNotFoundException(id));
-        readLock.unlock();
+        try {
+            productFound = products.stream()
+                    .filter(product -> id.equals(product.getId()))
+                    .filter(product -> product.getStock() > 0)
+                    .filter(product -> product.getPrice() != null)
+                    .findAny()
+                    .orElseThrow(() -> new ProductNotFoundException(id));
+        }
+        finally {
+            readLock.unlock();
+        }
 
         return productFound;
     }
@@ -48,39 +53,44 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         readLock.lock();
         try {
-            Comparator<Product> comparator = Comparator.comparing(product -> {
-                    if(SortField.description == sortField)
-                        return (Comparable) product.getDescription();
+            Comparator<Product> comparator = getComparator(query, sortField);
 
-                    if(SortField.price == sortField)
-                        return (Comparable) product.getPrice();
-
-                    else if(query != null && !query.equals(""))
-                        return (Comparable)Arrays.stream(query.split(" "))
-                                .filter(word -> product.getDescription().contains(word)).count();
-
-                    else
-                        return(Comparable) product.getId();
-            });
-
-            if(query == null || query.equals(""))
+            if(query == null || query.equals("")) {
                 return products.stream()
                         .filter(product -> product.getStock() > 0)
                         .filter(product -> product.getPrice() != null)
-                        .sorted((sortOrder == SortOrder.desc) ? comparator.reversed() : comparator)
+                        .sorted((sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator)
                         .collect(Collectors.toList());
-            else
+            } else {
                 return products.stream()
                         .filter(product -> product.getStock() > 0)
                         .filter(product -> product.getPrice() != null)
                         .filter(product -> Arrays.stream(query.split(" "))
                                 .anyMatch(word -> product.getDescription().contains(word)))
-                        .sorted((sortOrder == SortOrder.desc) ? comparator.reversed() : comparator)
+                        .sorted((sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator)
                         .collect(Collectors.toList());
+            }
         }
         finally{
             readLock.unlock();
         }
+    }
+
+    private Comparator<Product> getComparator(String query, SortField sortField){
+        return Comparator.comparing(product -> {
+            if(SortField.DESCRIPTION == sortField) {
+                return (Comparable) product.getDescription();
+            }
+            if(SortField.PRICE == sortField) {
+                return (Comparable) product.getPrice();
+            } else if(query != null && !query.equals("")) {
+                return (Comparable) (-Arrays.stream(query.split(" "))
+                        .filter(word -> product.getDescription().contains(word)).count());
+            } else {
+                return(Comparable) product.getId();
+            }
+        });
+
     }
 
     @Override
@@ -94,10 +104,11 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(productFound -> id.equals(productFound.getId()))
                     .findAny();
 
-            if(productFoundOpt.isPresent())
+            if(productFoundOpt.isPresent()) {
                 products.set(products.indexOf(productFoundOpt.get()), product);
-            else
+            } else {
                 products.add(product);
+            }
         }
         else {
             product.setId(maxId++);

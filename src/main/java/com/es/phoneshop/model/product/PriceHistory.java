@@ -1,13 +1,13 @@
 package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class PriceHistory {
     private BigDecimal price;
-    private Date date;
+    private LocalDate date;
 
-    public PriceHistory(BigDecimal price, Date date){
+    public PriceHistory(BigDecimal price, LocalDate date){
         this.date = date;
         this.price = price;
     }
@@ -20,11 +20,11 @@ public class PriceHistory {
         this.price = price;
     }
 
-    public Date getDate(){
+    public LocalDate getDate(){
         return date;
     }
 
-    public void setDate(Date date){
+    public void setDate(LocalDate date){
         this.date = date;
     }
 }

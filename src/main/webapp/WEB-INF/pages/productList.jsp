@@ -4,46 +4,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="products" type="java.util.ArrayList" scope="request"/>
+
 <tags:master pageTitle="Product List">
   <style>
-    .overlay {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.7);
-      transition: opacity 500ms;
-      display: none;
-      opacity: 0;
-    }
-    .overlay:target {
-      display:block;
-      opacity: 1;
-    }
-
-    .popup {
-      margin: 70px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 5px;
-      width: 30%;
-      position: relative;
-      transition: all 5s ease-in-out;
-    }
-
-    .popup .close {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      transition: all 200ms;
-    }
-
-    .popup-table, .popup-table > tbody > tr > td{
-      border: none;
-    }
+    <%@include file="style.css"%>>
   </style>
-
   <p>
     Welcome to Expert-Soft training!
   </p>
@@ -91,7 +56,9 @@
                 <table class="popup-table">
                 <c:forEach var="history" items="${product.histories}">
                   <tr>
-                    <td><fmt:formatDate value="${history.date}" pattern="yyyy-MM-dd"/></td>
+                    <td><fmt:parseDate value="${history.date}" pattern="yyyy-MM-dd" var="historyDate" type="date"/>
+                      <fmt:formatDate pattern="dd.MM.yyyy" value="${historyDate}"/></td>
+<%--                    <td><fmt:formatDate value="${history.date}" pattern="yyyy-MM-dd"/></td>--%>
                     <td><fmt:formatNumber value="${history.price}" type="currency"
                                           currencySymbol="${product.currency.symbol}" maxFractionDigits="0"/></td>
                   </tr>

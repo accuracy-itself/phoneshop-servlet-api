@@ -28,8 +28,8 @@ public class ProductListPageServlet extends HttpServlet {
         String sortOrder = request.getParameter("order");
 
         request.setAttribute("products", productDao.findProducts(query,
-                (sortField != null) ? SortField.valueOf(sortField) : null,
-                (sortOrder != null) ? SortOrder.valueOf(sortOrder) : null));
+                (sortField != null) ? SortField.valueOf(sortField.toUpperCase()) : null,
+                (sortOrder != null) ? SortOrder.valueOf(sortOrder.toUpperCase()) : null));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 

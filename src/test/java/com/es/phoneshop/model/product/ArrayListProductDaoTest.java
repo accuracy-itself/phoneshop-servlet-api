@@ -1,6 +1,6 @@
 package com.es.phoneshop.model.product;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -16,11 +16,15 @@ import static org.junit.Assert.assertEquals;
 
 public class ArrayListProductDaoTest
 {
-    private ProductDao productDao;
+    private static ProductDao productDao;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         productDao = ArrayListProductDao.getInstance();
+        Currency usd = Currency.getInstance("USD");
+        productDao.save(new Product(12L,"test-product", "HTC Super Mega", new BigDecimal(400), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
+        productDao.save(new Product(13L,"test-product", "Iphone", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
+        productDao.save(new Product(14L,"test-product", "Super Mega Device", new BigDecimal(500), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
     }
 
     @Test
@@ -37,27 +41,26 @@ public class ArrayListProductDaoTest
 
     @Test
     public void testSaveNewProduct() throws ProductNotFoundException {
+        Long id = 100L;
         Currency usd = Currency.getInstance("USD");
-        Product product = new Product("test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product = new Product(id,"test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
         assertTrue(product.getId() >= 0);
         Product result = productDao.getProduct(product.getId());
         assertNotNull(result);
         assertEquals("test-product", product.getCode());
+        productDao.delete(id);
     }
 
     @Test
     public void testSaveProductWithExistingId() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
-        long id = 0L;
-        Product product = new Product(id,"test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        Product productWithExistingId = new Product(id,"test-product-with-existing-id", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        productDao.save(product);
-        productDao.save(productWithExistingId);
-
-        Product productFound = productDao.getProduct(id);
+        productDao.save(new Product(0L,"test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
+        productDao.save(new Product(0L,"test-product-with-existing-id", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
+        Product productFound = productDao.getProduct(0L);
         assertEquals("test-product-with-existing-id", productFound.getCode());
+        productDao.delete(0L);
     }
 
     @Test
@@ -92,36 +95,19 @@ public class ArrayListProductDaoTest
     public void testDeleteProduct() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         long id = 0L;
-        Product product = new Product(id,"test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        productDao.save(product);
+        productDao.save(new Product(id,"test-product-with-existing-id", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
         productDao.delete(id);
         productDao.getProduct(id);
     }
 
     @Test
     public void testSearchForProducts(){
-        Currency usd = Currency.getInstance("USD");
-        Product product = new Product("test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        Product product2 = new Product("test-product", "HTC Super Mega", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        Product product3 = new Product("test-product", "Iphone", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        productDao.save(product);
-        productDao.save(product2);
-        productDao.save(product3);
-
         assertEquals(2, productDao.findProducts("S", null, null).size());
     }
 
     @Test
     public void testSortProducts(){
-        Currency usd = Currency.getInstance("USD");
-        Product product1 = new Product("test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        Product product2 = new Product("test-product", "HTC Super Mega", new BigDecimal(500), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        Product product3 = new Product("test-product", "Iphone", new BigDecimal(400), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-        productDao.save(product1);
-        productDao.save(product2);
-        productDao.save(product3);
-
-        List<Product> products = productDao.findProducts(null, SortField.price, SortOrder.desc);
+        List<Product> products = productDao.findProducts(null, SortField.PRICE, SortOrder.DESC);
         List<BigDecimal> prices = new ArrayList<>(), pricesFound = new ArrayList<>();
         prices.add(new BigDecimal(500));
         prices.add(new BigDecimal(400));

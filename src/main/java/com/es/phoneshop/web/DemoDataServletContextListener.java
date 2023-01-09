@@ -8,7 +8,10 @@ import com.es.phoneshop.model.product.ProductDao;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.math.BigDecimal;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
 
 public class DemoDataServletContextListener implements ServletContextListener {
     ProductDao productDao;
@@ -20,8 +23,9 @@ public class DemoDataServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         Boolean insertDemoData = Boolean.valueOf(event.getServletContext().getInitParameter("insertDemoData"));
-        if(insertDemoData)
+        if(insertDemoData) {
             saveSampleProducts();
+        }
     }
 
     @Override
@@ -32,15 +36,15 @@ public class DemoDataServletContextListener implements ServletContextListener {
     private synchronized void saveSampleProducts(){
         Currency usd = Currency.getInstance("USD");
         List<PriceHistory> histories = new ArrayList<>();
-        histories.add(new PriceHistory(new BigDecimal(10), new Date("December 17, 1995")));
-        histories.add(new PriceHistory(new BigDecimal(500), new Date("March 12, 2021")));
-        histories.add(new PriceHistory(new BigDecimal(3000), new Date("December 21, 2021")));
-        histories.add(new PriceHistory(new BigDecimal(2999), new Date("October 31, 2022")));
-        histories.add(new PriceHistory(new BigDecimal(300), new Date()));
+        histories.add(new PriceHistory(new BigDecimal(10), LocalDate.of(1995, 12, 17)));
+        histories.add(new PriceHistory(new BigDecimal(500), LocalDate.of(2021,3, 12)));
+        histories.add(new PriceHistory(new BigDecimal(3000), LocalDate.of(2021,12,21)));
+        histories.add(new PriceHistory(new BigDecimal(2999), LocalDate.of(2022,10,31)));
+        histories.add(new PriceHistory(new BigDecimal(300), LocalDate.now()));
 
         List<PriceHistory> historiesAnother = new ArrayList<>();
-        historiesAnother.add(new PriceHistory(new BigDecimal(700), new Date("January 01, 2001")));
-        historiesAnother.add(new PriceHistory(new BigDecimal(100), new Date()));
+        historiesAnother.add(new PriceHistory(new BigDecimal(700), LocalDate.of(2001,1,1)));
+        historiesAnother.add(new PriceHistory(new BigDecimal(100), LocalDate.now()));
         productDao.save(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg", historiesAnother));
         productDao.save(new Product("sgs2", "Samsung Galaxy S II", new BigDecimal(200), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg", histories));
         productDao.save(new Product("sgs3", "Samsung Galaxy S III", new BigDecimal(300), usd, 5, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg", histories));
@@ -53,6 +57,6 @@ public class DemoDataServletContextListener implements ServletContextListener {
         productDao.save(new Product("palmp", "Palm Pixi", null, usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Palm/Palm%20Pixi.jpg", historiesAnother));
         productDao.save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C56.jpg",historiesAnother));
         productDao.save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg",historiesAnother));
-        productDao.save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg",historiesAnother));
+        productDao.save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg",historiesAnother));
     }
 }
