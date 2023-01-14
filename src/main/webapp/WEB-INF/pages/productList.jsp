@@ -71,4 +71,5 @@
       </tr>
     </c:forEach>
   </table>
+  <jsp:include page="history.jsp"/>
 </tags:master>

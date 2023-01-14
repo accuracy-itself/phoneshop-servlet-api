@@ -67,4 +67,5 @@
             <button>Add to cart</button>
         </p>
     </form>
+    <jsp:include page="history.jsp"/>
 </tags:master>

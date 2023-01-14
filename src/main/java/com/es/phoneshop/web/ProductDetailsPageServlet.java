@@ -5,6 +5,9 @@ import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.cart.OutOfStockException;
+import com.es.phoneshop.model.product.history.History;
+import com.es.phoneshop.model.product.history.HistoryService;
+import com.es.phoneshop.model.product.history.HttpSessionHistoryService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -19,18 +22,22 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
 
     private CartService cartService;
+    private HistoryService historyService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
+        historyService = HttpSessionHistoryService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("product", productDao.getProduct(parseProductId(request)));
         request.setAttribute("cart", cartService.getCart(request));
+        historyService.add(historyService.getHistory(request), parseProductId(request));
+        request.setAttribute("history", historyService.getHistory(request));
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }
 
