@@ -58,7 +58,6 @@
                   <tr>
                     <td><fmt:parseDate value="${history.date}" pattern="yyyy-MM-dd" var="historyDate" type="date"/>
                       <fmt:formatDate pattern="dd.MM.yyyy" value="${historyDate}"/></td>
-<%--                    <td><fmt:formatDate value="${history.date}" pattern="yyyy-MM-dd"/></td>--%>
                     <td><fmt:formatNumber value="${history.price}" type="currency"
                                           currencySymbol="${product.currency.symbol}" maxFractionDigits="0"/></td>
                   </tr>

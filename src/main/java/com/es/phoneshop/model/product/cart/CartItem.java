@@ -18,4 +18,13 @@ public class CartItem {
     public int getQuantity() {
         return quantity;
     }
+
+    @Override
+    public String toString() {
+        return product.getDescription() + " : " + quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }
