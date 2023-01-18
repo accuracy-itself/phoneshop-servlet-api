@@ -1,6 +1,12 @@
 package com.es.phoneshop.model.product;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -13,9 +19,13 @@ public class ArrayListProductDao implements ProductDao {
     private Lock writeLock = readWriteLock.writeLock();
     private Lock readLock = readWriteLock.readLock();
     private static volatile ProductDao instance;
+    private Map<SortField, Comparator<Product>> comparatorMap;
 
     private ArrayListProductDao() {
         this.products = new ArrayList<>();
+        comparatorMap = new HashMap<>();
+        comparatorMap.put(SortField.DESCRIPTION, Comparator.comparing(Product::getDescription));
+        comparatorMap.put(SortField.PRICE, Comparator.comparing(Product::getPrice));
     }
 
     public static ProductDao getInstance() {
@@ -54,14 +64,14 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         readLock.lock();
         try {
-            Comparator<Product> comparator = getComparator(query, sortField);
+            Comparator<Product> comparator = getComparator(query, sortField, sortOrder);
 
             return products.stream()
                     .filter(product -> product.getStock() > 0)
                     .filter(product -> product.getPrice() != null)
                     .filter(product -> query == null || query.equals("") || Arrays.stream(query.split(" "))
                             .anyMatch(word -> product.getDescription().contains(word)))
-                    .sorted((sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator)
+                    .sorted(comparator)
                     .collect(Collectors.toList());
 
         } finally {
@@ -69,14 +79,17 @@ public class ArrayListProductDao implements ProductDao {
         }
     }
 
-    private Comparator<Product> getComparator(String query, SortField sortField) {
-        Map<SortField, Comparator<Product>> comparatorMap = new HashMap<>();
-        comparatorMap.put(SortField.DESCRIPTION, Comparator.comparing(Product::getDescription));
-        comparatorMap.put(SortField.PRICE, Comparator.comparing(Product::getPrice));
-        return comparatorMap.getOrDefault(sortField, (query != null && !query.equals(""))
-                ? Comparator.comparing(product -> (Comparable) (Arrays.stream(query.split(" "))
-                .filter(word -> ((Product) product).getDescription().contains(word)).count())).reversed()
+    private Comparator<Product> getComparator(String query, SortField sortField, SortOrder sortOrder) {
+        Comparator<Product> comparator = comparatorMap.getOrDefault(sortField, (query != null && !query.equals(""))
+                ? getWordMatchComparator(query)
                 : Comparator.comparing(Product::getId));
+
+        return (sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator;
+    }
+
+    private Comparator<Product> getWordMatchComparator(String query) {
+        return Comparator.comparing(product -> (Comparable) (Arrays.stream(query.split(" "))
+                .filter(word -> ((Product) product).getDescription().contains(word)).count())).reversed();
     }
 
     @Override

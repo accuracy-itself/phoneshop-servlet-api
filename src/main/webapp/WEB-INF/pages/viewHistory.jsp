@@ -8,19 +8,19 @@
 </h3>
 <table>
     <tr>
-        <c:forEach var="item" items="${history.products}">
+        <c:forEach var="item" items="${viewHistory.items}">
             <td>
                 <p>
-                    <img class="product-tile" src="${item.imageUrl}" alt="${item.description}">
+                    <img class="product-tile" src="${item.product.imageUrl}" alt="${item.product.description}">
                 </p>
                 <p>
-                    <a href="${pageContext.servletContext.contextPath}/products/${item.id}">
-                            ${item.description}
+                    <a href="${pageContext.servletContext.contextPath}/products/${item.product.id}">
+                            ${item.product.description}
                     </a>
                 </p>
                 <p>
-                    <fmt:formatNumber value="${item.price}" type="currency"
-                                      currencySymbol="${item.currency.symbol}"/>
+                    <fmt:formatNumber value="${item.product.price}" type="currency"
+                                      currencySymbol="${item.product.currency.symbol}"/>
                 </p>
             </td>
         </c:forEach>

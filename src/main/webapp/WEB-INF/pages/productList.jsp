@@ -49,16 +49,16 @@
           </a>
           <div id="${product.id}" class="overlay">
             <div class="popup">
-              <h2>Price history:</h2>
+              <h2>Price viewHistory:</h2>
               <h3>${product.description}</h3>
               <a class="close" href="#">&times;</a>
               <div>
                 <table class="popup-table">
-                <c:forEach var="history" items="${product.histories}">
+                <c:forEach var="viewHistory" items="${product.histories}">
                   <tr>
-                    <td><fmt:parseDate value="${history.date}" pattern="yyyy-MM-dd" var="historyDate" type="date"/>
+                    <td><fmt:parseDate value="${viewHistory.date}" pattern="yyyy-MM-dd" var="historyDate" type="date"/>
                       <fmt:formatDate pattern="dd.MM.yyyy" value="${historyDate}"/></td>
-                    <td><fmt:formatNumber value="${history.price}" type="currency"
+                    <td><fmt:formatNumber value="${viewHistory.price}" type="currency"
                                           currencySymbol="${product.currency.symbol}" maxFractionDigits="0"/></td>
                   </tr>
                 </c:forEach>
@@ -71,5 +71,5 @@
       </tr>
     </c:forEach>
   </table>
-  <jsp:include page="history.jsp"/>
+  <jsp:include page="viewHistory.jsp"/>
 </tags:master>

@@ -34,7 +34,8 @@ public class DefaultCartService implements CartService {
     public synchronized Cart getCart(HttpServletRequest request) {
         Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
         if (cart == null) {
-            request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
+            cart = new Cart();
+            request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart);
         }
         return cart;
     }
@@ -45,18 +46,21 @@ public class DefaultCartService implements CartService {
 
         List<CartItem> items = cart.getItems();
         Optional<CartItem> cartItem = items.stream()
-                .filter(item -> item.getProduct().equals(product))
+                .filter(item -> item.getProduct().getDescription().equals(product.getDescription()))
                 .findAny();
 
-        if (cartItem.isPresent()) {
-            int amount = cartItem.get().getQuantity() + quantity;
-            if (amount <= product.getStock()) {
-                cartItem.get().setQuantity(amount);
-            } else {
-                throw new OutOfStockException(product, amount, product.getStock());
-            }
+        if(cartItem.isPresent()) {
+            quantity +=  cartItem.get().getQuantity();
+        }
+
+        if(quantity > product.getStock()) {
+            throw new OutOfStockException(product, quantity, product.getStock());
         } else {
-            items.add(new CartItem(product, quantity));
+            if (cartItem.isPresent()) {
+                cartItem.get().setQuantity(quantity);
+            } else {
+                items.add(new CartItem(product, quantity));
+            }
         }
     }
 }
