@@ -44,10 +44,12 @@ public class ProductDetailsPageServletTest {
 
     @Test
     public void testDoGet() throws ServletException, IOException {
-        when(request.getPathInfo()).thenReturn("/0");
         String path = "/WEB-INF/pages/product.jsp";
+        when(request.getPathInfo()).thenReturn("/0");
         when(request.getRequestDispatcher(path)).thenReturn(requestDispatcher);
+
         servlet.doGet(request, response);
+
         verify(requestDispatcher).forward(request, response);
     }
 }

@@ -2,9 +2,11 @@ package com.es.phoneshop.model.product;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -16,17 +18,27 @@ public class ArrayListProductDao implements ProductDao {
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Lock writeLock = readWriteLock.writeLock();
     private Lock readLock = readWriteLock.readLock();
-    private static ProductDao instance;
-
-    public static synchronized ProductDao getInstance(){
-        if(instance == null) {
-            instance = new ArrayListProductDao();
-        }
-        return instance;
-    }
+    private static volatile ProductDao instance;
+    private Map<SortField, Comparator<Product>> comparatorMap;
 
     private ArrayListProductDao() {
         this.products = new ArrayList<>();
+        comparatorMap = new HashMap<>();
+        comparatorMap.put(SortField.DESCRIPTION, Comparator.comparing(Product::getDescription));
+        comparatorMap.put(SortField.PRICE, Comparator.comparing(Product::getPrice));
+    }
+
+    public static ProductDao getInstance() {
+        ProductDao localInstance = instance;
+        if (localInstance == null) {
+            synchronized (ArrayListProductDao.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new ArrayListProductDao();
+                }
+            }
+        }
+        return localInstance;
     }
 
     @Override
@@ -41,8 +53,7 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(product -> product.getPrice() != null)
                     .findAny()
                     .orElseThrow(() -> new ProductNotFoundException(id));
-        }
-        finally {
+        } finally {
             readLock.unlock();
         }
 
@@ -53,44 +64,32 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         readLock.lock();
         try {
-            Comparator<Product> comparator = getComparator(query, sortField);
+            Comparator<Product> comparator = getComparator(query, sortField, sortOrder);
 
-            if(query == null || query.equals("")) {
-                return products.stream()
-                        .filter(product -> product.getStock() > 0)
-                        .filter(product -> product.getPrice() != null)
-                        .sorted((sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator)
-                        .collect(Collectors.toList());
-            } else {
-                return products.stream()
-                        .filter(product -> product.getStock() > 0)
-                        .filter(product -> product.getPrice() != null)
-                        .filter(product -> Arrays.stream(query.split(" "))
-                                .anyMatch(word -> product.getDescription().contains(word)))
-                        .sorted((sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator)
-                        .collect(Collectors.toList());
-            }
-        }
-        finally{
+            return products.stream()
+                    .filter(product -> product.getStock() > 0)
+                    .filter(product -> product.getPrice() != null)
+                    .filter(product -> query == null || query.equals("") || Arrays.stream(query.split(" "))
+                            .anyMatch(word -> product.getDescription().contains(word)))
+                    .sorted(comparator)
+                    .collect(Collectors.toList());
+
+        } finally {
             readLock.unlock();
         }
     }
 
-    private Comparator<Product> getComparator(String query, SortField sortField){
-        return Comparator.comparing(product -> {
-            if(SortField.DESCRIPTION == sortField) {
-                return (Comparable) product.getDescription();
-            }
-            if(SortField.PRICE == sortField) {
-                return (Comparable) product.getPrice();
-            } else if(query != null && !query.equals("")) {
-                return (Comparable) (-Arrays.stream(query.split(" "))
-                        .filter(word -> product.getDescription().contains(word)).count());
-            } else {
-                return(Comparable) product.getId();
-            }
-        });
+    private Comparator<Product> getComparator(String query, SortField sortField, SortOrder sortOrder) {
+        Comparator<Product> comparator = comparatorMap.getOrDefault(sortField, (query != null && !query.equals(""))
+                ? getWordMatchComparator(query)
+                : Comparator.comparing(Product::getId));
 
+        return (sortOrder == SortOrder.DESC) ? comparator.reversed() : comparator;
+    }
+
+    private Comparator<Product> getWordMatchComparator(String query) {
+        return Comparator.comparing(product -> (Comparable) (Arrays.stream(query.split(" "))
+                .filter(word -> ((Product) product).getDescription().contains(word)).count())).reversed();
     }
 
     @Override
@@ -99,18 +98,17 @@ public class ArrayListProductDao implements ProductDao {
 
         writeLock.lock();
 
-        if(id != null) {
-            Optional<Product> productFoundOpt = products.stream()
-                    .filter(productFound -> id.equals(productFound.getId()))
+        if (id != null) {
+            Optional<Product> productFound = products.stream()
+                    .filter(prod -> id.equals(prod.getId()))
                     .findAny();
 
-            if(productFoundOpt.isPresent()) {
-                products.set(products.indexOf(productFoundOpt.get()), product);
+            if (productFound.isPresent()) {
+                products.set(products.indexOf(productFound.get()), product);
             } else {
                 products.add(product);
             }
-        }
-        else {
+        } else {
             product.setId(maxId++);
             products.add(product);
         }

@@ -7,7 +7,7 @@ public class PriceHistory {
     private BigDecimal price;
     private LocalDate date;
 
-    public PriceHistory(BigDecimal price, LocalDate date){
+    public PriceHistory(BigDecimal price, LocalDate date) {
         this.date = date;
         this.price = price;
     }
@@ -16,15 +16,15 @@ public class PriceHistory {
         return price;
     }
 
-    public void setPrice(BigDecimal price){
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public LocalDate getDate(){
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date){
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 }
