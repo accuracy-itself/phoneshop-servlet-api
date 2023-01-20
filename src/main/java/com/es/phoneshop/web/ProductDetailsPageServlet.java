@@ -34,7 +34,6 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("product", productDao.getProduct(parseProductId(request)));
-        request.setAttribute("cart", cartService.getCart(request));
         viewHistoryService.add(viewHistoryService.getHistory(request), parseProductId(request));
         request.setAttribute("viewHistory", viewHistoryService.getHistory(request));
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
