@@ -24,12 +24,12 @@
           Description
           <tags:sortLink order="asc" sort="description"/>
           <tags:sortLink order="desc" sort="description"/>
-
         </td>
         <td class="price">
           Price
           <tags:sortLink order="asc" sort="price"/>
           <tags:sortLink order="desc" sort="price"/>
+        </td>
       </tr>
     </thead>
     <c:forEach var="product" items="${products}">

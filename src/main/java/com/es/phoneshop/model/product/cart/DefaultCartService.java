@@ -49,11 +49,11 @@ public class DefaultCartService implements CartService {
                 .filter(item -> item.getProduct().getDescription().equals(product.getDescription()))
                 .findAny();
 
-        if(cartItem.isPresent()) {
-            quantity +=  cartItem.get().getQuantity();
+        if (cartItem.isPresent()) {
+            quantity += cartItem.get().getQuantity();
         }
 
-        if(quantity > product.getStock()) {
+        if (quantity > product.getStock()) {
             throw new OutOfStockException(product, quantity, product.getStock());
         } else {
             if (cartItem.isPresent()) {
@@ -61,6 +61,22 @@ public class DefaultCartService implements CartService {
             } else {
                 items.add(new CartItem(product, quantity));
             }
+        }
+    }
+
+    @Override
+    public synchronized void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        Product product = productDao.getProduct(productId);
+
+        List<CartItem> items = cart.getItems();
+
+        if (quantity > product.getStock()) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        } else {
+            items.stream()
+                    .filter(item -> item.getProduct().getDescription().equals(product.getDescription()))
+                    .findAny()
+                    .ifPresent(cartItem -> cartItem.setQuantity(quantity));
         }
     }
 }
