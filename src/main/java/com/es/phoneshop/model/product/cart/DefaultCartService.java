@@ -79,4 +79,10 @@ public class DefaultCartService implements CartService {
                     .ifPresent(cartItem -> cartItem.setQuantity(quantity));
         }
     }
+
+    @Override
+    public void delete(Cart cart, Long productId) {
+        cart.getItems().removeIf(item ->
+                item.getProduct().getId().equals(productId));
+    }
 }
