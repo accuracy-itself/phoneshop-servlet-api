@@ -77,7 +77,6 @@
                 </div>
               </div>
             </div>
-
           </td>
           <td>
             <button form="deleteCartItem"

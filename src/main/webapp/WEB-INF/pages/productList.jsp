@@ -12,6 +12,16 @@
   <p>
     Welcome to Expert-Soft training!
   </p>
+  <c:if test="${not empty param.message}">
+    <div class="success">
+        ${param.message}
+    </div>
+  </c:if>
+  <c:if test="${not empty param.error}">
+    <div class="error">
+      ${param.error}
+    </div>
+  </c:if>
   <form>
     <input name="query" value="${param.query}">
     <button>Search</button>
@@ -42,6 +52,11 @@
             ${product.description}
           </a>
         </td>
+        <td class="quantity">
+          <form id="addToCart${product.id}" method="post" >
+            <input name="quantity" value="${not empty error ? param.quantity : 1}" class="quantity">
+          </form>
+        </td>
         <td class="price-popup">
           <a href="#${product.id}">
           <fmt:formatNumber value="${product.price}" type="currency"
@@ -66,7 +81,9 @@
               </div>
             </div>
           </div>
-
+        </td>
+        <td>
+            <button form="addToCart${product.id}" formaction="${pageContext.servletContext.contextPath}/addCartItem/${product.id}">Add to cart</button>
         </td>
       </tr>
     </c:forEach>
