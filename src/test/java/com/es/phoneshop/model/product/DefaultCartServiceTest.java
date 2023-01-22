@@ -74,4 +74,12 @@ public class DefaultCartServiceTest {
 
         cartService.add(cart, 12L, 1000);
     }
+
+    @Test
+    public void testUpdate() throws OutOfStockException, ProductNotFoundException {
+        Cart cart = cartService.getCart(request);
+        cartService.add(cart, 12L, 10);
+        cartService.update(cart, 12L, 15);
+        assertEquals(15, cart.getTotalQuantity());
+    }
 }

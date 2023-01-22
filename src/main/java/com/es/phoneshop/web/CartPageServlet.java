@@ -21,22 +21,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CartPageServlet extends HttpServlet {
-    private ProductDao productDao;
-
     private CartService cartService;
     private ViewHistoryService viewHistoryService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
         viewHistoryService = HttpSessionViewHistoryService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Cart cart = cartService.getCart(request);
         request.setAttribute("cart", cartService.getCart(request));
         request.setAttribute("viewHistory", viewHistoryService.getHistory(request));
         request.getRequestDispatcher("/WEB-INF/pages/cart.jsp").forward(request, response);
@@ -70,10 +66,5 @@ public class CartPageServlet extends HttpServlet {
             request.setAttribute("errors", errors);
             doGet(request, response);
         }
-    }
-
-    private Long parseProductId(HttpServletRequest request) {
-        String productId = request.getPathInfo();
-        return Long.valueOf(productId.substring(1));
     }
 }
