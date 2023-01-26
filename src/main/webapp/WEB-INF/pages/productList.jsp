@@ -19,9 +19,10 @@
   </c:if>
   <c:if test="${not empty param.error}">
     <div class="error">
-      ${param.error}
+      There was an error adding to cart. ${param.error}
     </div>
   </c:if>
+  <br>
   <form>
     <input name="query" value="${param.query}">
     <button>Search</button>
@@ -35,11 +36,13 @@
           <tags:sortLink order="asc" sort="description"/>
           <tags:sortLink order="desc" sort="description"/>
         </td>
+        <td>Quantity</td>
         <td class="price">
           Price
           <tags:sortLink order="asc" sort="price"/>
           <tags:sortLink order="desc" sort="price"/>
         </td>
+        <td></td>
       </tr>
     </thead>
     <c:forEach var="product" items="${products}">
@@ -54,7 +57,7 @@
         </td>
         <td class="quantity">
           <form id="addToCart${product.id}" method="post" >
-            <input name="quantity" value="${not empty error ? param.quantity : 1}" class="quantity">
+            <input name="quantity" value="1" class="quantity">
           </form>
         </td>
         <td class="price-popup">

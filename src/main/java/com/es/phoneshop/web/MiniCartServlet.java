@@ -20,7 +20,7 @@ public class MiniCartServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("cart", cartService.getCart(request));
         request.getRequestDispatcher("/WEB-INF/pages/minicart.jsp").include(request, response);
     }

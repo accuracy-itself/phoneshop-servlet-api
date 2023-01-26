@@ -1,8 +1,5 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.cart.OutOfStockException;
@@ -44,19 +41,25 @@ public class CartPageServlet extends HttpServlet {
         String[]  quantities = request.getParameterValues("quantity");
 
         Map<Long, String> errors = new HashMap<>();
-        for(int i = 0; i < productIds.length; i++) {
-            Long productId = Long.valueOf(productIds[i]);
+        if(productIds != null) {
+            for (int i = 0; i < productIds.length; i++) {
+                Long productId = Long.valueOf(productIds[i]);
 
-            int quantity;
+                int quantity;
 
-            try {
-                NumberFormat format = NumberFormat.getInstance(request.getLocale());
-                quantity = format.parse(quantities[i]).intValue();
-                cartService.update(cartService.getCart(request), productId, quantity);
-            } catch (ParseException ex) {
-                errors.put(productId, "Not a number");
-            } catch (OutOfStockException e) {
-                errors.put(productId, "Out of stock, available " + e.getStockAvailable());
+                try {
+                    NumberFormat format = NumberFormat.getInstance(request.getLocale());
+                    quantity = format.parse(quantities[i]).intValue();
+                    if (quantity <= 0) {
+                        errors.put(productId, "Incorrect number");
+                        continue;
+                    }
+                    cartService.update(cartService.getCart(request), productId, quantity);
+                } catch (ParseException ex) {
+                    errors.put(productId, "Not a number");
+                } catch (OutOfStockException e) {
+                    errors.put(productId, "Out of stock, available " + e.getStockAvailable());
+                }
             }
         }
 

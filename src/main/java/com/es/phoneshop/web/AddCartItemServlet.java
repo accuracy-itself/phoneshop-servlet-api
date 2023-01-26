@@ -34,13 +34,14 @@ public class AddCartItemServlet extends HttpServlet {
         try {
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
             quantity = format.parse(quantityString).intValue();
+            if (quantity <= 0) {
+                response.sendRedirect(request.getContextPath() + "/products?error=Incorrect number");
+                return;
+            }
+            cartService.add(cart, productId, quantity);
         } catch (ParseException ex) {
             response.sendRedirect(request.getContextPath() + "/products?error=Not a number");
             return;
-        }
-
-        try {
-            cartService.add(cart, productId, quantity);
         } catch (OutOfStockException e) {
             response.sendRedirect(request.getContextPath() + "/products?error=Out of stock, available " + e.getStockAvailable());
             return;
