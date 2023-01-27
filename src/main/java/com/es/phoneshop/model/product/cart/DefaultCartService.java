@@ -5,8 +5,10 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DefaultCartService implements CartService {
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
@@ -49,11 +51,11 @@ public class DefaultCartService implements CartService {
                 .filter(item -> item.getProduct().getDescription().equals(product.getDescription()))
                 .findAny();
 
-        if(cartItem.isPresent()) {
-            quantity +=  cartItem.get().getQuantity();
+        if (cartItem.isPresent()) {
+            quantity += cartItem.get().getQuantity();
         }
 
-        if(quantity > product.getStock()) {
+        if (quantity > product.getStock()) {
             throw new OutOfStockException(product, quantity, product.getStock());
         } else {
             if (cartItem.isPresent()) {
@@ -62,5 +64,44 @@ public class DefaultCartService implements CartService {
                 items.add(new CartItem(product, quantity));
             }
         }
+
+        recalculateCart(cart);
+    }
+
+    @Override
+    public synchronized void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        Product product = productDao.getProduct(productId);
+
+        List<CartItem> items = cart.getItems();
+
+        if (quantity > product.getStock()) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        } else {
+            items.stream()
+                    .filter(item -> item.getProduct().getCode().equals(product.getCode()))
+                    .findAny()
+                    .ifPresent(cartItem -> cartItem.setQuantity(quantity));
+        }
+
+        recalculateCart(cart);
+    }
+
+    @Override
+    public synchronized void delete(Cart cart, Long productId) {
+        cart.getItems().removeIf(item ->
+                item.getProduct().getId().equals(productId));
+        recalculateCart(cart);
+    }
+
+    private synchronized void recalculateCart(Cart cart) {
+        cart.setTotalQuantity(cart.getItems().stream()
+                .map(CartItem::getQuantity)
+                .collect(Collectors.summingInt(q->q.intValue()))
+        );
+
+        cart.setTotalCost(cart.getItems().stream()
+                .map(item -> item.getProduct().getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
     }
 }
