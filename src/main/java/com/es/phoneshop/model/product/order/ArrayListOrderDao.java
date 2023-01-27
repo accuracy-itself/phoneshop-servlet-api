@@ -20,7 +20,7 @@ public class ArrayListOrderDao implements OrderDao {
     }
 
     public static OrderDao getInstance() {
-            OrderDao localInstance = instance;
+        OrderDao localInstance = instance;
         if (localInstance == null) {
             synchronized (ArrayListOrderDao.class) {
                 localInstance = instance;
@@ -41,7 +41,24 @@ public class ArrayListOrderDao implements OrderDao {
             orderFound = orders.stream()
                     .filter(order -> id.equals(order.getId()))
                     .findAny()
-                    .orElseThrow(() -> new OrderNotFoundException(id));
+                    .orElseThrow(OrderNotFoundException::new);
+        } finally {
+            readLock.unlock();
+        }
+
+        return orderFound;
+    }
+
+    @Override
+    public Order getOrderBySecureId(String id) throws OrderNotFoundException {
+        Order orderFound;
+
+        readLock.lock();
+        try {
+            orderFound = orders.stream()
+                    .filter(order -> id.equals(order.getSecureId()))
+                    .findAny()
+                    .orElseThrow(OrderNotFoundException::new);
         } finally {
             readLock.unlock();
         }

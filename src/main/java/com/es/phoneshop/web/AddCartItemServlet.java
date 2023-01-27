@@ -24,8 +24,8 @@ public class AddCartItemServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long productId = IdParser.parseProductId(request);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Long productId = IdParser.parseId(request);
         Cart cart = cartService.getCart(request);
 
         String quantityString = request.getParameter("quantity");

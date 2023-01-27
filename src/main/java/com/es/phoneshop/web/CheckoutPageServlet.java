@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -58,7 +59,8 @@ public class CheckoutPageServlet extends HttpServlet {
 
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            response.sendRedirect(request.getContextPath() + "/overview/" + order.getId());
+            cartService.clearCart(cart);
+            response.sendRedirect(request.getContextPath() + "/order/overview/" + order.getSecureId());
         } else {
             request.setAttribute("errors", errors);
             request.setAttribute("order", order);
@@ -92,7 +94,11 @@ public class CheckoutPageServlet extends HttpServlet {
         if (value == null || value.isEmpty()) {
             errors.put(parameter, ERROR_MESSAGE);
         } else {
-            order.setDeliveryDate(LocalDate.parse(value));
+            try {
+                order.setDeliveryDate(LocalDate.parse(value));
+            } catch (DateTimeParseException e) {
+                errors.put(parameter, "Wrong date");
+            }
         }
     }
 }
