@@ -78,7 +78,7 @@ public class DefaultCartService implements CartService {
             throw new OutOfStockException(product, quantity, product.getStock());
         } else {
             items.stream()
-                    .filter(item -> item.getProduct().getDescription().equals(product.getDescription()))
+                    .filter(item -> item.getProduct().getCode().equals(product.getCode()))
                     .findAny()
                     .ifPresent(cartItem -> cartItem.setQuantity(quantity));
         }
@@ -87,13 +87,13 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public void delete(Cart cart, Long productId) {
+    public synchronized void delete(Cart cart, Long productId) {
         cart.getItems().removeIf(item ->
                 item.getProduct().getId().equals(productId));
         recalculateCart(cart);
     }
 
-    private void recalculateCart(Cart cart) {
+    private synchronized void recalculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getItems().stream()
                 .map(CartItem::getQuantity)
                 .collect(Collectors.summingInt(q->q.intValue()))

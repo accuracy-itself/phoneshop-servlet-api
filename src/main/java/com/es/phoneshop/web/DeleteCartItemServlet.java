@@ -22,7 +22,7 @@ public class DeleteCartItemServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long productId = parseProductId(request);
+        Long productId = IdParser.parseProductId(request);
 
         Cart cart = cartService.getCart(request);
         cartService.delete(cart, productId);
@@ -30,8 +30,5 @@ public class DeleteCartItemServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/cart?message=Cart item removed successfully.");
     }
 
-    private Long parseProductId(HttpServletRequest request) {
-        String productId = request.getPathInfo();
-        return Long.valueOf(productId.substring(1));
-    }
+
 }

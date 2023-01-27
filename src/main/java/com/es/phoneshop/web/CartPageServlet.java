@@ -38,10 +38,10 @@ public class CartPageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] productIds = request.getParameterValues("productId");
-        String[]  quantities = request.getParameterValues("quantity");
+        String[] quantities = request.getParameterValues("quantity");
 
         Map<Long, String> errors = new HashMap<>();
-        if(productIds != null) {
+        if (productIds != null) {
             for (int i = 0; i < productIds.length; i++) {
                 Long productId = Long.valueOf(productIds[i]);
 
@@ -63,7 +63,7 @@ public class CartPageServlet extends HttpServlet {
             }
         }
 
-        if(errors.isEmpty()) {
+        if (errors.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully.");
         } else {
             request.setAttribute("errors", errors);

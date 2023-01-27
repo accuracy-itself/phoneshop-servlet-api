@@ -45,7 +45,7 @@ public class MiniCartServletTest {
         when(request.getRequestDispatcher(path)).thenReturn(requestDispatcher);
         when(request.getSession()).thenReturn(session);
 
-        servlet.doGet(request, response);
+        servlet.service(request, response);
 
         verify(request).setAttribute(eq("cart"), any());
         verify(requestDispatcher).include(request, response);
