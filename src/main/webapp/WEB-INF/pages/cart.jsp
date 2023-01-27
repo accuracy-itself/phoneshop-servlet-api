@@ -97,5 +97,8 @@
   </form>
   <form id="deleteCartItem" method="post">
   </form>
+  <form action="${pageContext.servletContext.contextPath}/checkout">
+    <button>Checkout</button>
+  </form>
   <jsp:include page="viewHistory.jsp"/>
 </tags:master>
