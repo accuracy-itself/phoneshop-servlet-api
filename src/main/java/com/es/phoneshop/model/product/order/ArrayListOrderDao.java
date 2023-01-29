@@ -3,13 +3,14 @@ package com.es.phoneshop.model.product.order;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ArrayListOrderDao implements OrderDao {
     private List<Order> orders;
-    private long maxId;
+    private AtomicLong maxId;
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Lock writeLock = readWriteLock.writeLock();
     private Lock readLock = readWriteLock.readLock();
@@ -17,6 +18,7 @@ public class ArrayListOrderDao implements OrderDao {
 
     private ArrayListOrderDao() {
         this.orders = new ArrayList<>();
+        maxId = new AtomicLong(0);
     }
 
     public static OrderDao getInstance() {
@@ -83,7 +85,7 @@ public class ArrayListOrderDao implements OrderDao {
                 orders.add(order);
             }
         } else {
-            order.setId(maxId++);
+            order.setId(maxId.incrementAndGet());
             orders.add(order);
         }
 

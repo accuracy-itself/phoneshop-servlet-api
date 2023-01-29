@@ -5,5 +5,5 @@ import com.es.phoneshop.model.product.cart.Cart;
 public interface OrderService {
     Order getOrder(Cart cart);
 
-    public void placeOrder(Order order);
+    void placeOrder(Order order);
 }

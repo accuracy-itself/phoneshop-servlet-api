@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
     private List<Product> products;
-    private long maxId;
+    private AtomicLong maxId;
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Lock writeLock = readWriteLock.writeLock();
     private Lock readLock = readWriteLock.readLock();
@@ -23,6 +24,7 @@ public class ArrayListProductDao implements ProductDao {
 
     private ArrayListProductDao() {
         this.products = new ArrayList<>();
+        maxId = new AtomicLong(0);
         comparatorMap = new HashMap<>();
         comparatorMap.put(SortField.DESCRIPTION, Comparator.comparing(Product::getDescription));
         comparatorMap.put(SortField.PRICE, Comparator.comparing(Product::getPrice));
@@ -109,7 +111,7 @@ public class ArrayListProductDao implements ProductDao {
                 products.add(product);
             }
         } else {
-            product.setId(maxId++);
+            product.setId(maxId.incrementAndGet());
             products.add(product);
         }
 
