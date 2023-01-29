@@ -35,7 +35,7 @@ public class DefaultOrderService implements OrderService {
         Order order = new Order();
         order.setItems(cart.getItems().stream().map(item -> {
             try {
-                return (CartItem) item.clone();
+                return item.clone();
             } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }
@@ -43,12 +43,16 @@ public class DefaultOrderService implements OrderService {
         order.setSubTotal(cart.getTotalCost());
         order.setDeliveryCost(calculateDeliveryCost());
         order.setTotalQuantity(cart.getTotalQuantity());
-        order.setTotalCost(order.getDeliveryCost().add(order.getSubTotal()));
+        order.setTotalCost(calculateTotalCost(order));
         return order;
     }
 
     private BigDecimal calculateDeliveryCost() {
         return new BigDecimal(1);
+    }
+
+    private BigDecimal calculateTotalCost(Order order) {
+        return order.getDeliveryCost().add(order.getSubTotal());
     }
 
     @Override

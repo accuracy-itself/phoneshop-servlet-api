@@ -39,7 +39,16 @@ public class CheckoutPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("order", orderService.getOrder(cartService.getCart(request)));
+        Cart cart = cartService.getCart(request);
+        if (cart.getItems().isEmpty()) {
+
+            request.setAttribute("cart", cart);
+            response.sendRedirect(request.getContextPath() + "/cart?error=Cart is empty");
+            //request.getRequestDispatcher("/WEB-INF/pages/cart.jsp").forward(request, response);
+            return;
+        }
+
+        request.setAttribute("order", orderService.getOrder(cart));
         request.setAttribute("viewHistory", viewHistoryService.getHistory(request));
         request.getRequestDispatcher(CHECKOUT_JSP).forward(request, response);
     }

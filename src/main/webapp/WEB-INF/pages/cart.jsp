@@ -11,6 +11,11 @@
   <p>
     Cart : ${cart}
   </p>
+  <c:if test="${not empty param.error}">
+    <div class="error">
+      ${param.error}
+    </div>
+  </c:if>
   <c:if test="${not empty param.message and empty error}">
     <div class="success">
         ${param.message}
