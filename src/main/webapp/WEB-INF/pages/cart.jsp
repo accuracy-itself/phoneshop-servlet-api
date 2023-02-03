@@ -11,6 +11,11 @@
   <p>
     Cart : ${cart}
   </p>
+  <c:if test="${not empty param.error}">
+    <div class="error">
+      ${param.error}
+    </div>
+  </c:if>
   <c:if test="${not empty param.message and empty error}">
     <div class="success">
         ${param.message}
@@ -96,6 +101,9 @@
     </p>
   </form>
   <form id="deleteCartItem" method="post">
+  </form>
+  <form action="${pageContext.servletContext.contextPath}/checkout">
+    <button>Checkout</button>
   </form>
   <jsp:include page="viewHistory.jsp"/>
 </tags:master>

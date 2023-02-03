@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class DefaultCartService implements CartService {
     public static DefaultCartService getInstance() {
         DefaultCartService localInstance = instance;
         if (localInstance == null) {
-            synchronized (ArrayListProductDao.class) {
+            synchronized (DefaultCartService.class) {
                 localInstance = instance;
                 if (localInstance == null) {
                     instance = localInstance = new DefaultCartService();
@@ -95,13 +96,19 @@ public class DefaultCartService implements CartService {
 
     private synchronized void recalculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getItems().stream()
-                .map(CartItem::getQuantity)
-                .collect(Collectors.summingInt(q->q.intValue()))
+                .map(CartItem::getQuantity).mapToInt(Integer::intValue).sum()
         );
 
         cart.setTotalCost(cart.getItems().stream()
                 .map(item -> item.getProduct().getPrice().multiply(new BigDecimal(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
         );
+    }
+
+    @Override
+    public void clearCart(Cart cart) {
+        cart.setItems(new ArrayList<>());
+        cart.setTotalCost(null);
+        cart.setTotalQuantity(0);
     }
 }

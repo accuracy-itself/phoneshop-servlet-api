@@ -34,15 +34,15 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("product", productDao.getProduct(IdParser.parseProductId(request)));
-        viewHistoryService.add(viewHistoryService.getHistory(request), IdParser.parseProductId(request));
+        request.setAttribute("product", productDao.getProduct(IdParser.parseId(request)));
+        viewHistoryService.add(viewHistoryService.getHistory(request), IdParser.parseId(request));
         request.setAttribute("viewHistory", viewHistoryService.getHistory(request));
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long productId = IdParser.parseProductId(request);
+        Long productId = IdParser.parseId(request);
         String quantityString = request.getParameter("quantity");
         String errorAttribute = "error";
         int quantity;

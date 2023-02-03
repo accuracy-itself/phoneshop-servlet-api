@@ -3,15 +3,10 @@ package com.es.phoneshop.model.product.cart;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Cart implements Serializable {
     private List<CartItem> items;
-    private Currency currency;
     private BigDecimal totalCost;
     private int totalQuantity;
 
@@ -21,6 +16,10 @@ public class Cart implements Serializable {
 
     public List<CartItem> getItems() {
         return items;
+    }
+
+    public void setItems(List<CartItem> items) {
+        this.items = items;
     }
 
     public BigDecimal getTotalCost() {
