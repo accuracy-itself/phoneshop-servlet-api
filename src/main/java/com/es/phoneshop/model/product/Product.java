@@ -1,22 +1,18 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.Entity;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
-public class Product implements Serializable {
+public class Product implements Serializable, Entity {
     private Long id;
     private String code;
     private String description;
-    /**
-     * null means there is no price because the product is outdated or new
-     */
     private BigDecimal price;
-    /**
-     * can be null if the price is null
-     */
     private Currency currency;
     private int stock;
     private String imageUrl;

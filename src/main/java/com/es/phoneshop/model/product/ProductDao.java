@@ -1,13 +1,11 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.EntityDao;
+
 import java.util.List;
 
-public interface ProductDao {
-    Product getProduct(Long id) throws ProductNotFoundException;
-
+public interface ProductDao extends EntityDao<Product> {
     List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder);
-
-    void save(Product product);
 
     void delete(Long id);
 }
