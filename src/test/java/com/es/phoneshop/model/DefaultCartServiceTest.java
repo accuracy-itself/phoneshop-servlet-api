@@ -1,8 +1,11 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model;
 
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.cart.OutOfStockException;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.model.cart.OutOfStockException;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -76,10 +80,30 @@ public class DefaultCartServiceTest {
     }
 
     @Test
-    public void testUpdate() throws OutOfStockException, ProductNotFoundException {
+    public void testUpdate() throws OutOfStockException, EntityNotFoundException {
         Cart cart = cartService.getCart(request);
         cartService.add(cart, 12L, 10);
         cartService.update(cart, 12L, 15);
         assertEquals(15, cart.getTotalQuantity());
+    }
+
+    @Test()
+    public void testDeleteItem() throws OutOfStockException{
+        Cart cart = cartService.getCart(request);
+        cartService.add(cart, 12L, 10);
+        assertNotEquals(cart.getItems().size(), 0);
+        cartService.delete(cart, 12L);
+        assertEquals(0, cart.getItems().size());
+    }
+
+    @Test
+    public void testClearCart() throws OutOfStockException{
+        Cart cart = cartService.getCart(request);
+        cartService.add(cart, 12L, 10);
+        cartService.add(cart, 13L, 10);
+        cartService.add(cart, 14L, 10);
+        cartService.clearCart(cart);
+
+        assertEquals(0, cart.getItems().size());
     }
 }

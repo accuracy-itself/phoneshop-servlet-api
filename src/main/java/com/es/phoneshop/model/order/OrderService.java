@@ -1,6 +1,6 @@
-package com.es.phoneshop.model.product.order;
+package com.es.phoneshop.model.order;
 
-import com.es.phoneshop.model.product.cart.Cart;
+import com.es.phoneshop.model.cart.Cart;
 
 public interface OrderService {
     Order getOrder(Cart cart);

@@ -1,8 +1,7 @@
-package com.es.phoneshop.model.product.order;
+package com.es.phoneshop.model.order;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.CartItem;
+import com.es.phoneshop.model.cart.Cart;
 
 import java.math.BigDecimal;
 import java.util.UUID;

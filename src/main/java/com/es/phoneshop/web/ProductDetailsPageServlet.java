@@ -2,12 +2,12 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.CartService;
-import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.cart.OutOfStockException;
-import com.es.phoneshop.model.product.history.HttpSessionViewHistoryService;
-import com.es.phoneshop.model.product.history.ViewHistoryService;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.model.cart.OutOfStockException;
+import com.es.phoneshop.model.history.HttpSessionViewHistoryService;
+import com.es.phoneshop.model.history.ViewHistoryService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -34,7 +34,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("product", productDao.getProduct(IdParser.parseId(request)));
+        request.setAttribute("product", productDao.getEntity(IdParser.parseId(request)));
         viewHistoryService.add(viewHistoryService.getHistory(request), IdParser.parseId(request));
         request.setAttribute("viewHistory", viewHistoryService.getHistory(request));
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);

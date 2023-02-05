@@ -1,9 +1,9 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.history.HttpSessionViewHistoryService;
-import com.es.phoneshop.model.product.history.ViewHistoryService;
-import com.es.phoneshop.model.product.order.ArrayListOrderDao;
-import com.es.phoneshop.model.product.order.OrderDao;
+import com.es.phoneshop.model.history.HttpSessionViewHistoryService;
+import com.es.phoneshop.model.history.ViewHistoryService;
+import com.es.phoneshop.model.order.ArrayListOrderDao;
+import com.es.phoneshop.model.order.OrderDao;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 public class OrderViewPageServlet extends HttpServlet {
     private OrderDao orderDao;
     private ViewHistoryService viewHistoryService;
-    private String ORDER_OVERVIEW_JSP = "/WEB-INF/pages/orderOverview.jsp";
+    private static String ORDER_OVERVIEW_JSP = "/WEB-INF/pages/orderOverview.jsp";
 
     @Override
     public void init(ServletConfig config) throws ServletException {

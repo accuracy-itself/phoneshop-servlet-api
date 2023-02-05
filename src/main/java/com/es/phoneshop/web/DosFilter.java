@@ -1,7 +1,7 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.security.DefaultDosProtectionService;
-import com.es.phoneshop.model.product.security.DosProtectionService;
+import com.es.phoneshop.model.security.DefaultDosProtectionService;
+import com.es.phoneshop.model.security.DosProtectionService;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

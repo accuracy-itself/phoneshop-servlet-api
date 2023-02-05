@@ -1,8 +1,12 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model;
 
-import com.es.phoneshop.model.product.history.HttpSessionViewHistoryService;
-import com.es.phoneshop.model.product.history.ViewHistory;
-import com.es.phoneshop.model.product.history.ViewHistoryService;
+import com.es.phoneshop.model.history.HttpSessionViewHistoryService;
+import com.es.phoneshop.model.history.ViewHistory;
+import com.es.phoneshop.model.history.ViewHistoryService;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +15,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.swing.text.View;
 import java.math.BigDecimal;
 import java.util.Currency;
 
@@ -69,6 +72,6 @@ public class HttpSessionViewHistoryServiceTest {
         viewHistoryService.add(viewHistory, 13L);
         viewHistoryService.add(viewHistory, 12L);
 
-        assertEquals(Long.valueOf(12L), viewHistory.getItems().get(0).getProduct().getId());
+        Assert.assertEquals(Long.valueOf(12L), viewHistory.getItems().get(0).getProduct().getId());
     }
 }

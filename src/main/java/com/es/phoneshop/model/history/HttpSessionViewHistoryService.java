@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product.history;
+package com.es.phoneshop.model.history;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
@@ -41,7 +41,7 @@ public class HttpSessionViewHistoryService implements ViewHistoryService {
 
     @Override
     public synchronized void add(ViewHistory history, Long productId) {
-        Product product = productDao.getProduct(productId);
+        Product product = productDao.getEntity(productId);
 
         List<ViewHistoryItem> viewHistory = history.getItems();
         ViewHistoryItem viewHistoryItem = new ViewHistoryItem(product);

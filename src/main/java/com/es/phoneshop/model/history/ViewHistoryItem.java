@@ -1,10 +1,11 @@
-package com.es.phoneshop.model.product.history;
+package com.es.phoneshop.model.history;
 
 import com.es.phoneshop.model.product.Product;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ViewHistoryItem {
+public class ViewHistoryItem implements Serializable {
     public Product product;
 
     public ViewHistoryItem(Product product) {
