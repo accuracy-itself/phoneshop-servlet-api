@@ -2,6 +2,7 @@ package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.model.ArrayListEntityDao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,6 +52,37 @@ public class ArrayListProductDao extends ArrayListEntityDao<Product> implements 
                     .sorted(comparator)
                     .collect(Collectors.toList());
 
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public List<Product> findProductsAdvanced(String query, Boolean wordAllMatch, SortField sortField, SortOrder sortOrder,
+                                              BigDecimal minPrice, BigDecimal maxPrice) {
+        readLock.lock();
+        try {
+            List<Product> productsFound = findProducts(query, sortField, sortOrder);
+            if (Boolean.TRUE.equals(wordAllMatch)) {
+                String[] words = query.split(" ");
+                productsFound = productsFound.stream()
+                        .filter(product ->
+                        {
+                            for(String word : words) {
+                                if (!product.getDescription().contains(word)) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                        )
+                        .collect(Collectors.toList());
+            }
+
+            return productsFound.stream()
+                    .filter(product -> minPrice == null || product.getPrice().compareTo(minPrice) >= 0)
+                    .filter(product -> maxPrice == null || product.getPrice().compareTo(maxPrice) <= 0)
+                    .collect(Collectors.toList());
         } finally {
             readLock.unlock();
         }

@@ -32,7 +32,7 @@
     transition: all 200ms;
 }
 
-.popup-table, .popup-table > tbody > tr > td {
+.popup-table, .popup-table > tbody > tr > td, .search-table, .search-table > tbody > tr > td {
     border: none;
 }
 

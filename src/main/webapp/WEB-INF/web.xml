@@ -86,6 +86,15 @@
     <url-pattern>/order/overview/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>advancedSearch</servlet-name>
+    <servlet-class>com.es.phoneshop.web.AdvancedSearchPageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>advancedSearch</servlet-name>
+    <url-pattern>/advancedSearch</url-pattern>
+  </servlet-mapping>
+
   <error-page>
     <exception-type>com.es.phoneshop.model.EntityNotFoundException</exception-type>
     <location>/WEB-INF/pages/errorEntityNotFound.jsp</location>
