@@ -1,14 +1,14 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.CartService;
-import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.history.HttpSessionViewHistoryService;
-import com.es.phoneshop.model.product.history.ViewHistoryService;
-import com.es.phoneshop.model.product.order.DefaultOrderService;
-import com.es.phoneshop.model.product.order.Order;
-import com.es.phoneshop.model.product.order.OrderService;
-import com.es.phoneshop.model.product.order.PaymentMethod;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.model.history.HttpSessionViewHistoryService;
+import com.es.phoneshop.model.history.ViewHistoryService;
+import com.es.phoneshop.model.order.DefaultOrderService;
+import com.es.phoneshop.model.order.Order;
+import com.es.phoneshop.model.order.OrderService;
+import com.es.phoneshop.model.order.PaymentMethod;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,8 +26,8 @@ public class CheckoutPageServlet extends HttpServlet {
     private CartService cartService;
     private OrderService orderService;
     private ViewHistoryService viewHistoryService;
-    private String CHECKOUT_JSP = "/WEB-INF/pages/checkout.jsp";
-    private String ERROR_MESSAGE = "Value is required";
+    private static String CHECKOUT_JSP = "/WEB-INF/pages/checkout.jsp";
+    private static String ERROR_MESSAGE = "Value is required";
 
     @Override
     public void init(ServletConfig config) throws ServletException {

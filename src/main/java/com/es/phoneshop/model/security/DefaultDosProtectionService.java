@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product.security;
+package com.es.phoneshop.model.security;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultDosProtectionService implements DosProtectionService {
     private static volatile DefaultDosProtectionService instance;
-    private static final long THRESHOLD = 10;
+    private static final long THRESHOLD = 100;
     private Map<String, Long> countMap = new ConcurrentHashMap<>();
     private Map<String, LocalDateTime> timerMap = new ConcurrentHashMap<>();
 

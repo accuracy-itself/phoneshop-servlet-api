@@ -1,12 +1,15 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model;
 
-import com.es.phoneshop.model.product.cart.Cart;
-import com.es.phoneshop.model.product.cart.CartService;
-import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.cart.OutOfStockException;
-import com.es.phoneshop.model.product.order.ArrayListOrderDao;
-import com.es.phoneshop.model.product.order.DefaultOrderService;
-import com.es.phoneshop.model.product.order.Order;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.order.ArrayListOrderDao;
+import com.es.phoneshop.model.order.DefaultOrderService;
+import com.es.phoneshop.model.order.Order;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.DefaultCartService;
+import com.es.phoneshop.model.cart.OutOfStockException;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +65,7 @@ public class DefaultOrderServiceTest {
     public void testPlaceOrder() {
         Order order = orderService.getOrder(cart);
         orderService.placeOrder(order);
-        Order orderFound = ArrayListOrderDao.getInstance().getOrder(order.getId());
+        Order orderFound = ArrayListOrderDao.getInstance().getEntity(order.getId());
         assertNotNull(orderFound);
     }
 }

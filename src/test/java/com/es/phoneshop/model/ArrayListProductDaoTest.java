@@ -1,5 +1,10 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model;
 
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.SortField;
+import com.es.phoneshop.model.product.SortOrder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -38,13 +43,13 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testSaveNewProduct() throws ProductNotFoundException {
+    public void testSaveNewProduct() throws EntityNotFoundException {
         Long id = 100L;
         Currency usd = Currency.getInstance("USD");
         Product product = new Product(id, "test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
 
         productDao.save(product);
-        Product result = productDao.getProduct(product.getId());
+        Product result = productDao.getEntity(product.getId());
 
         assertTrue(product.getId() >= 0);
         assertNotNull(result);
@@ -53,12 +58,12 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testSaveProductWithExistingId() throws ProductNotFoundException {
+    public void testSaveProductWithExistingId() throws EntityNotFoundException {
         Currency usd = Currency.getInstance("USD");
 
         productDao.save(new Product(0L, "test-product", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
         productDao.save(new Product(0L, "test-product-with-existing-id", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
-        Product productFound = productDao.getProduct(0L);
+        Product productFound = productDao.getEntity(0L);
 
         assertEquals("test-product-with-existing-id", productFound.getCode());
         productDao.delete(0L);
@@ -92,14 +97,14 @@ public class ArrayListProductDaoTest {
         assertEquals(imageUrl, product.getImageUrl());
     }
 
-    @Test(expected = ProductNotFoundException.class)
-    public void testDeleteProduct() throws ProductNotFoundException {
+    @Test(expected = EntityNotFoundException.class)
+    public void testDeleteProduct() throws EntityNotFoundException {
         Currency usd = Currency.getInstance("USD");
         long id = 0L;
 
         productDao.save(new Product(id, "test-product-with-existing-id", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
         productDao.delete(id);
-        productDao.getProduct(id);
+        productDao.getEntity(id);
     }
 
     @Test

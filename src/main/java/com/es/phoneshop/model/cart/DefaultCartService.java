@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product.cart;
+package com.es.phoneshop.model.cart;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class DefaultCartService implements CartService {
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
@@ -45,7 +44,7 @@ public class DefaultCartService implements CartService {
 
     @Override
     public synchronized void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
-        Product product = productDao.getProduct(productId);
+        Product product = productDao.getEntity(productId);
 
         List<CartItem> items = cart.getItems();
         Optional<CartItem> cartItem = items.stream()
@@ -71,7 +70,7 @@ public class DefaultCartService implements CartService {
 
     @Override
     public synchronized void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
-        Product product = productDao.getProduct(productId);
+        Product product = productDao.getEntity(productId);
 
         List<CartItem> items = cart.getItems();
 

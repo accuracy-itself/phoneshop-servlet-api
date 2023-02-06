@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product.history;
+package com.es.phoneshop.model.history;
 
 import javax.servlet.http.HttpServletRequest;
 
